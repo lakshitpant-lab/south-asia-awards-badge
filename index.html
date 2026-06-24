@@ -412,6 +412,7 @@
                 <label>Zoom</label>
                 <input type="range" id="zoomSlider" min="50" max="200" value="100">
             </div>
+            <p style="font-size: 0.72rem; color: #5e6e82; margin-top: 10px;">Drag the preview image to reposition it.</p>
         </div>
 
         <div class="panel preview-section">
@@ -436,6 +437,13 @@
         let currentStyle = 'indigo';
         let currentCustomTheme = null;
         let outputShape = 'circle';
+        let offsetX = 0;
+        let offsetY = 0;
+        let isDragging = false;
+        let dragStartX = 0;
+        let dragStartY = 0;
+        let dragStartOffsetX = 0;
+        let dragStartOffsetY = 0;
 
         const styles = {
             indigo: {
@@ -485,6 +493,65 @@
         });
 
         zoomSlider.addEventListener('input', drawBadge);
+
+        // Drag to reposition image
+        canvas.style.cursor = 'grab';
+        canvas.addEventListener('mousedown', (e) => {
+            if (!uploadedImage) return;
+            isDragging = true;
+            canvas.style.cursor = 'grabbing';
+            const rect = canvas.getBoundingClientRect();
+            const scaleX = canvas.width / rect.width;
+            dragStartX = (e.clientX - rect.left) * scaleX;
+            dragStartY = (e.clientY - rect.top) * scaleX;
+            dragStartOffsetX = offsetX;
+            dragStartOffsetY = offsetY;
+        });
+        canvas.addEventListener('mousemove', (e) => {
+            if (!isDragging) return;
+            const rect = canvas.getBoundingClientRect();
+            const scaleX = canvas.width / rect.width;
+            const x = (e.clientX - rect.left) * scaleX;
+            const y = (e.clientY - rect.top) * scaleX;
+            offsetX = dragStartOffsetX + (x - dragStartX);
+            offsetY = dragStartOffsetY + (y - dragStartY);
+            drawBadge();
+        });
+        window.addEventListener('mouseup', () => {
+            if (isDragging) {
+                isDragging = false;
+                canvas.style.cursor = 'grab';
+            }
+        });
+
+        // Touch support for mobile
+        canvas.addEventListener('touchstart', (e) => {
+            if (!uploadedImage) return;
+            e.preventDefault();
+            isDragging = true;
+            const rect = canvas.getBoundingClientRect();
+            const scaleX = canvas.width / rect.width;
+            const touch = e.touches[0];
+            dragStartX = (touch.clientX - rect.left) * scaleX;
+            dragStartY = (touch.clientY - rect.top) * scaleX;
+            dragStartOffsetX = offsetX;
+            dragStartOffsetY = offsetY;
+        }, { passive: false });
+        canvas.addEventListener('touchmove', (e) => {
+            if (!isDragging) return;
+            e.preventDefault();
+            const rect = canvas.getBoundingClientRect();
+            const scaleX = canvas.width / rect.width;
+            const touch = e.touches[0];
+            const x = (touch.clientX - rect.left) * scaleX;
+            const y = (touch.clientY - rect.top) * scaleX;
+            offsetX = dragStartOffsetX + (x - dragStartX);
+            offsetY = dragStartOffsetY + (y - dragStartY);
+            drawBadge();
+        }, { passive: false });
+        canvas.addEventListener('touchend', () => {
+            isDragging = false;
+        });
 
         // Style cards
         document.querySelectorAll('.style-card').forEach(card => {
@@ -560,8 +627,8 @@
 
         function drawCircularBadge() {
             const size = 500;
-            canvas.width = size;
-            canvas.height = size;
+            if (canvas.width !== size) canvas.width = size;
+            if (canvas.height !== size) canvas.height = size;
             const center = size / 2;
             const ringWidth = 46;
             const outerRadius = size / 2 - 5;
@@ -582,7 +649,7 @@
                 const scale = (innerRadius * 2) / imgSize * zoom;
                 const drawWidth = uploadedImage.width * scale;
                 const drawHeight = uploadedImage.height * scale;
-                ctx.drawImage(uploadedImage, center - drawWidth / 2, center - drawHeight / 2, drawWidth, drawHeight);
+                ctx.drawImage(uploadedImage, center - drawWidth / 2 + offsetX, center - drawHeight / 2 + offsetY, drawWidth, drawHeight);
                 ctx.restore();
             } else {
                 ctx.beginPath();
@@ -631,8 +698,8 @@
 
         function drawRectangularBadge() {
             const size = 500;
-            canvas.width = size;
-            canvas.height = size;
+            if (canvas.width !== size) canvas.width = size;
+            if (canvas.height !== size) canvas.height = size;
             const theme = getActiveTheme();
             const borderWidth = 42;
             const radius = 16;
@@ -654,7 +721,7 @@
                 const drawHeight = uploadedImage.height * scale;
                 const cx = size / 2;
                 const cy = size / 2;
-                ctx.drawImage(uploadedImage, cx - drawWidth / 2, cy - drawHeight / 2, drawWidth, drawHeight);
+                ctx.drawImage(uploadedImage, cx - drawWidth / 2 + offsetX, cy - drawHeight / 2 + offsetY, drawWidth, drawHeight);
                 ctx.restore();
             } else {
                 ctx.save();
