@@ -1,0 +1,819 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>South Asia Awards FY26 Winner - Badge Generator</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Didact+Gothic&display=swap" rel="stylesheet">
+    <style>
+        @font-face {
+            font-family: 'ITC Avant Garde';
+            src: local('ITC Avant Garde Gothic'), local('ITC Avant Garde Gothic Std'), local('AvantGarde-Book'), local('AvantGarde'), local('Century Gothic'), local('Didact Gothic');
+            font-weight: 400;
+        }
+        @font-face {
+            font-family: 'ITC Avant Garde';
+            src: local('ITC Avant Garde Gothic Bold'), local('ITC Avant Garde Gothic Std Bold'), local('AvantGarde-Bold'), local('Century Gothic Bold');
+            font-weight: 700;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'ITC Avant Garde', 'Didact Gothic', 'Century Gothic', 'Avant Garde', sans-serif;
+            background: #f5f7fa;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 40px 20px;
+            color: #032d60;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 32px;
+        }
+
+        h1 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #032d60;
+            letter-spacing: -0.3px;
+        }
+
+        .subtitle {
+            color: #5e6e82;
+            margin-top: 6px;
+            font-size: 0.92rem;
+        }
+
+        .container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 28px;
+            justify-content: center;
+            align-items: flex-start;
+            max-width: 1100px;
+            width: 100%;
+        }
+
+        .panel {
+            background: #ffffff;
+            border-radius: 12px;
+            padding: 28px;
+            box-shadow: 0 1px 8px rgba(0, 0, 0, 0.06);
+            border: 1px solid #e8ecf1;
+        }
+
+        .upload-section {
+            min-width: 360px;
+            flex: 1;
+        }
+
+        .preview-section {
+            min-width: 380px;
+            flex: 1;
+            text-align: center;
+        }
+
+        .section-title {
+            font-size: 0.72rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1.2px;
+            color: #5e6e82;
+            margin-bottom: 14px;
+        }
+
+        .upload-area {
+            border: 2px dashed #d0d7e0;
+            border-radius: 10px;
+            padding: 30px 20px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            margin-bottom: 24px;
+            background: #fafbfc;
+        }
+
+        .upload-area:hover {
+            border-color: #0176d3;
+            background: #f0f7ff;
+        }
+
+        .upload-area svg {
+            width: 38px;
+            height: 38px;
+            fill: #0176d3;
+            margin-bottom: 8px;
+        }
+
+        .upload-area p {
+            color: #5e6e82;
+            font-size: 0.88rem;
+        }
+
+        input[type="file"] {
+            display: none;
+        }
+
+        /* Style presets */
+        .style-presets {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .style-card {
+            flex: 1;
+            padding: 14px 8px 12px;
+            border-radius: 10px;
+            cursor: pointer;
+            text-align: center;
+            border: 2px solid #e8ecf1;
+            transition: all 0.2s ease;
+            background: #fff;
+        }
+
+        .style-card .style-preview {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            margin: 0 auto 6px;
+            border: 2px solid rgba(0,0,0,0.06);
+        }
+
+        .style-card[data-style="indigo"] .style-preview {
+            background: conic-gradient(from 180deg, #032d60, #1b96ff, #032d60, #0b5cab, #032d60);
+        }
+        .style-card[data-style="agentforce"] .style-preview {
+            background: conic-gradient(from 180deg, #5a1ba9, #a66bbe, #2e0053, #7526a0, #5a1ba9);
+        }
+        .style-card[data-style="einstein"] .style-preview {
+            background: conic-gradient(from 180deg, #0d9dda, #06a59a, #032d60, #1b96ff, #0d9dda);
+        }
+
+        .style-card:hover {
+            border-color: #0176d3;
+            transform: translateY(-1px);
+            box-shadow: 0 3px 8px rgba(1, 118, 211, 0.12);
+        }
+
+        .style-card.active {
+            border-color: #0176d3;
+            background: #f0f7ff;
+        }
+
+        .style-card .style-name {
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: #032d60;
+        }
+
+        .style-card .style-desc {
+            font-size: 0.62rem;
+            color: #5e6e82;
+            margin-top: 2px;
+        }
+
+        /* Color swatches */
+        .color-options {
+            display: flex;
+            gap: 9px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-top: 10px;
+            margin-bottom: 20px;
+        }
+
+        .color-swatch {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            cursor: pointer;
+            border: 3px solid transparent;
+            transition: all 0.2s ease;
+        }
+
+        .color-swatch:hover,
+        .color-swatch.active {
+            border-color: #032d60;
+            transform: scale(1.18);
+        }
+
+        /* Dividers */
+        .or-divider {
+            text-align: center;
+            position: relative;
+            margin: 16px 0;
+        }
+
+        .or-divider::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: #e8ecf1;
+        }
+
+        .or-divider span {
+            background: #fff;
+            padding: 0 12px;
+            position: relative;
+            font-size: 0.65rem;
+            font-weight: 700;
+            color: #9daab7;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .divider {
+            height: 1px;
+            background: #e8ecf1;
+            margin: 20px 0;
+        }
+
+        /* Shape toggle */
+        .shape-toggle {
+            display: flex;
+            gap: 0;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            overflow: hidden;
+            border: 1px solid #d0d7e0;
+        }
+
+        .shape-btn {
+            flex: 1;
+            padding: 10px 14px;
+            border: none;
+            background: #fff;
+            font-family: inherit;
+            font-size: 0.78rem;
+            font-weight: 600;
+            color: #5e6e82;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .shape-btn.active {
+            background: #0176d3;
+            color: #fff;
+        }
+
+        .shape-btn:not(.active):hover {
+            background: #f0f7ff;
+        }
+
+        /* Controls */
+        .control-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .control-row label {
+            font-size: 0.76rem;
+            color: #5e6e82;
+            min-width: 42px;
+            font-weight: 600;
+        }
+
+        input[type="range"] {
+            flex: 1;
+            accent-color: #0176d3;
+        }
+
+        /* Canvas */
+        .canvas-container {
+            display: inline-block;
+            margin: 14px 0;
+        }
+
+        canvas {
+            max-width: 100%;
+            display: block;
+            border-radius: 50%;
+        }
+
+        canvas.square {
+            border-radius: 8px;
+        }
+
+        /* Buttons */
+        .btn {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 8px;
+            font-family: inherit;
+            font-size: 0.88rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .btn-primary {
+            background: #0176d3;
+            color: #fff;
+        }
+
+        .btn-primary:hover {
+            background: #014486;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(1, 118, 211, 0.3);
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.35;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        @media (max-width: 768px) {
+            h1 { font-size: 1.4rem; }
+            .container {
+                flex-direction: column;
+                align-items: center;
+            }
+            .upload-section, .preview-section {
+                min-width: unset;
+                width: 100%;
+            }
+            .style-presets {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>South Asia Awards FY26</h1>
+        <p class="subtitle">Generate your Winner badge for LinkedIn & Slack</p>
+    </div>
+
+    <div class="container">
+        <div class="panel upload-section">
+            <div class="section-title">1. Upload Your Photo</div>
+            <div class="upload-area" id="uploadArea">
+                <svg viewBox="0 0 24 24"><path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM14 13v4h-4v-4H7l5-5 5 5h-3z"/></svg>
+                <p>Click or drag & drop your photo here</p>
+            </div>
+            <input type="file" id="fileInput" accept="image/*">
+
+            <div class="section-title">2. Choose Style</div>
+            <div class="style-presets">
+                <div class="style-card active" data-style="indigo">
+                    <div class="style-preview"></div>
+                    <div class="style-name">Indigo</div>
+                    <div class="style-desc">Navy + Cloud Blue</div>
+                </div>
+                <div class="style-card" data-style="agentforce">
+                    <div class="style-preview"></div>
+                    <div class="style-name">Agentforce</div>
+                    <div class="style-desc">Purple + Violet</div>
+                </div>
+                <div class="style-card" data-style="einstein">
+                    <div class="style-preview"></div>
+                    <div class="style-name">Einstein</div>
+                    <div class="style-desc">Teal + Blue</div>
+                </div>
+            </div>
+
+            <div class="or-divider"><span>or pick a color</span></div>
+
+            <div class="color-options">
+                <div class="color-swatch" data-theme="coral" style="background: linear-gradient(135deg, #ff5d2d, #fe9339);" title="Coral"></div>
+                <div class="color-swatch" data-theme="forest" style="background: linear-gradient(135deg, #2e844a, #45c65a);" title="Forest"></div>
+                <div class="color-swatch" data-theme="hot-pink" style="background: linear-gradient(135deg, #e3066a, #ff6bb5);" title="Pink"></div>
+                <div class="color-swatch" data-theme="gold" style="background: linear-gradient(135deg, #c8a415, #ffd200);" title="Gold"></div>
+                <div class="color-swatch" data-theme="midnight" style="background: linear-gradient(135deg, #16325c, #4a6fa5);" title="Midnight"></div>
+                <div class="color-swatch" data-theme="ruby" style="background: linear-gradient(135deg, #ba0517, #ff4040);" title="Ruby"></div>
+            </div>
+
+            <div class="divider"></div>
+
+            <div class="section-title">3. Output Shape</div>
+            <div class="shape-toggle">
+                <button class="shape-btn active" data-shape="circle">Circular (LinkedIn)</button>
+                <button class="shape-btn" data-shape="square">Rectangular (Slack)</button>
+            </div>
+
+            <div class="section-title">4. Adjust</div>
+            <div class="control-row">
+                <label>Zoom</label>
+                <input type="range" id="zoomSlider" min="50" max="200" value="100">
+            </div>
+        </div>
+
+        <div class="panel preview-section">
+            <div class="section-title">Preview</div>
+            <div class="canvas-container">
+                <canvas id="canvas" width="500" height="500"></canvas>
+            </div>
+            <br>
+            <button class="btn btn-primary" id="downloadBtn" disabled>Download Image</button>
+        </div>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        const fileInput = document.getElementById('fileInput');
+        const uploadArea = document.getElementById('uploadArea');
+        const downloadBtn = document.getElementById('downloadBtn');
+        const zoomSlider = document.getElementById('zoomSlider');
+
+        let uploadedImage = null;
+        let currentStyle = 'indigo';
+        let currentCustomTheme = null;
+        let outputShape = 'circle';
+
+        const styles = {
+            indigo: {
+                gradient: ['#032d60', '#0b5cab', '#1b96ff', '#0b5cab'],
+                textColor: '#ffffff',
+            },
+            agentforce: {
+                gradient: ['#2e0053', '#5a1ba9', '#a66bbe', '#5a1ba9'],
+                textColor: '#ffffff',
+            },
+            einstein: {
+                gradient: ['#032d60', '#0d9dda', '#06a59a', '#0d9dda'],
+                textColor: '#ffffff',
+            }
+        };
+
+        const customThemes = {
+            'coral': { gradient: ['#d83a00', '#ff5d2d', '#fe9339', '#ff5d2d'], textColor: '#fff' },
+            'forest': { gradient: ['#194e31', '#2e844a', '#45c65a', '#2e844a'], textColor: '#fff' },
+            'hot-pink': { gradient: ['#a00346', '#e3066a', '#ff6bb5', '#e3066a'], textColor: '#fff' },
+            'gold': { gradient: ['#8c6b0a', '#c8a415', '#ffd200', '#c8a415'], textColor: '#1a1a2e' },
+            'midnight': { gradient: ['#0a1628', '#16325c', '#4a6fa5', '#16325c'], textColor: '#fff' },
+            'ruby': { gradient: ['#7c0a12', '#ba0517', '#ff4040', '#ba0517'], textColor: '#fff' }
+        };
+
+        drawBadge();
+
+        // Upload
+        uploadArea.addEventListener('click', () => fileInput.click());
+        uploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadArea.style.borderColor = '#0176d3';
+            uploadArea.style.background = '#f0f7ff';
+        });
+        uploadArea.addEventListener('dragleave', () => {
+            uploadArea.style.borderColor = '#d0d7e0';
+            uploadArea.style.background = '#fafbfc';
+        });
+        uploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadArea.style.borderColor = '#d0d7e0';
+            uploadArea.style.background = '#fafbfc';
+            if (e.dataTransfer.files[0]) handleFile(e.dataTransfer.files[0]);
+        });
+        fileInput.addEventListener('change', (e) => {
+            if (e.target.files[0]) handleFile(e.target.files[0]);
+        });
+
+        zoomSlider.addEventListener('input', drawBadge);
+
+        // Style cards
+        document.querySelectorAll('.style-card').forEach(card => {
+            card.addEventListener('click', () => {
+                document.querySelectorAll('.style-card').forEach(c => c.classList.remove('active'));
+                card.classList.add('active');
+                currentStyle = card.dataset.style;
+                currentCustomTheme = null;
+                document.querySelectorAll('.color-swatch').forEach(s => s.classList.remove('active'));
+                drawBadge();
+            });
+        });
+
+        // Color swatches
+        document.querySelectorAll('.color-swatch').forEach(swatch => {
+            swatch.addEventListener('click', () => {
+                document.querySelectorAll('.color-swatch').forEach(s => s.classList.remove('active'));
+                swatch.classList.add('active');
+                currentCustomTheme = swatch.dataset.theme;
+                document.querySelectorAll('.style-card').forEach(c => c.classList.remove('active'));
+                drawBadge();
+            });
+        });
+
+        // Shape toggle
+        document.querySelectorAll('.shape-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.shape-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                outputShape = btn.dataset.shape;
+                canvas.className = outputShape === 'square' ? 'square' : '';
+                drawBadge();
+            });
+        });
+
+        // Download
+        downloadBtn.addEventListener('click', () => {
+            const link = document.createElement('a');
+            const suffix = outputShape === 'circle' ? 'linkedin' : 'slack';
+            link.download = `south-asia-awards-fy27-winner-${suffix}.png`;
+            link.href = canvas.toDataURL('image/png');
+            link.click();
+        });
+
+        function handleFile(file) {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const img = new Image();
+                img.onload = () => {
+                    uploadedImage = img;
+                    downloadBtn.disabled = false;
+                    drawBadge();
+                };
+                img.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function getActiveTheme() {
+            if (currentCustomTheme && customThemes[currentCustomTheme]) {
+                return customThemes[currentCustomTheme];
+            }
+            return styles[currentStyle];
+        }
+
+        function drawBadge() {
+            if (outputShape === 'circle') {
+                drawCircularBadge();
+            } else {
+                drawRectangularBadge();
+            }
+        }
+
+        function drawCircularBadge() {
+            const size = 500;
+            canvas.width = size;
+            canvas.height = size;
+            const center = size / 2;
+            const ringWidth = 46;
+            const outerRadius = size / 2 - 5;
+            const innerRadius = outerRadius - ringWidth;
+            const theme = getActiveTheme();
+
+            ctx.clearRect(0, 0, size, size);
+
+            // Photo
+            if (uploadedImage) {
+                ctx.save();
+                ctx.beginPath();
+                ctx.arc(center, center, innerRadius - 2, 0, Math.PI * 2);
+                ctx.closePath();
+                ctx.clip();
+                const zoom = zoomSlider.value / 100;
+                const imgSize = Math.min(uploadedImage.width, uploadedImage.height);
+                const scale = (innerRadius * 2) / imgSize * zoom;
+                const drawWidth = uploadedImage.width * scale;
+                const drawHeight = uploadedImage.height * scale;
+                ctx.drawImage(uploadedImage, center - drawWidth / 2, center - drawHeight / 2, drawWidth, drawHeight);
+                ctx.restore();
+            } else {
+                ctx.beginPath();
+                ctx.arc(center, center, innerRadius - 2, 0, Math.PI * 2);
+                ctx.fillStyle = '#e8ecf1';
+                ctx.fill();
+                ctx.fillStyle = '#5e6e82';
+                ctx.font = "15px 'ITC Avant Garde', 'Century Gothic', sans-serif";
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText('Your Photo Here', center, center);
+            }
+
+            // Ring
+            ctx.save();
+            ctx.beginPath();
+            ctx.arc(center, center, outerRadius, 0, Math.PI * 2);
+            ctx.arc(center, center, innerRadius, 0, Math.PI * 2, true);
+            ctx.closePath();
+            const gradient = ctx.createConicGradient(0, center, center);
+            const colors = theme.gradient;
+            colors.forEach((color, i) => gradient.addColorStop(i / colors.length, color));
+            gradient.addColorStop(1, colors[0]);
+            ctx.fillStyle = gradient;
+            ctx.fill();
+            ctx.restore();
+
+            // Sparkles (top/sides only)
+            drawSparkles(center, outerRadius, innerRadius);
+
+            // Text at bottom
+            drawCurvedText(center, outerRadius, innerRadius, theme);
+
+            // Borders
+            ctx.beginPath();
+            ctx.arc(center, center, innerRadius, 0, Math.PI * 2);
+            ctx.strokeStyle = 'rgba(255,255,255,0.2)';
+            ctx.lineWidth = 1.5;
+            ctx.stroke();
+            ctx.beginPath();
+            ctx.arc(center, center, outerRadius, 0, Math.PI * 2);
+            ctx.strokeStyle = 'rgba(255,255,255,0.1)';
+            ctx.lineWidth = 1.5;
+            ctx.stroke();
+        }
+
+        function drawRectangularBadge() {
+            const size = 500;
+            canvas.width = size;
+            canvas.height = size;
+            const theme = getActiveTheme();
+            const borderWidth = 42;
+            const radius = 16;
+            const textBarHeight = 52;
+
+            ctx.clearRect(0, 0, size, size);
+
+            // Photo fills the square
+            if (uploadedImage) {
+                ctx.save();
+                roundedRect(ctx, borderWidth, borderWidth, size - borderWidth * 2, size - borderWidth * 2, radius - 4);
+                ctx.clip();
+                const zoom = zoomSlider.value / 100;
+                const innerW = size - borderWidth * 2;
+                const innerH = size - borderWidth * 2;
+                const imgSize = Math.min(uploadedImage.width, uploadedImage.height);
+                const scale = Math.max(innerW, innerH) / imgSize * zoom;
+                const drawWidth = uploadedImage.width * scale;
+                const drawHeight = uploadedImage.height * scale;
+                const cx = size / 2;
+                const cy = size / 2;
+                ctx.drawImage(uploadedImage, cx - drawWidth / 2, cy - drawHeight / 2, drawWidth, drawHeight);
+                ctx.restore();
+            } else {
+                ctx.save();
+                roundedRect(ctx, borderWidth, borderWidth, size - borderWidth * 2, size - borderWidth * 2, radius - 4);
+                ctx.fillStyle = '#e8ecf1';
+                ctx.fill();
+                ctx.restore();
+                ctx.fillStyle = '#5e6e82';
+                ctx.font = "15px 'ITC Avant Garde', 'Century Gothic', sans-serif";
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText('Your Photo Here', size / 2, size / 2);
+            }
+
+            // Gradient rectangular border
+            // Draw as a filled rounded rect with inner hole
+            ctx.save();
+            // Outer path
+            roundedRect(ctx, 0, 0, size, size, radius);
+            // Inner path (counter-clockwise to cut out)
+            roundedRectCCW(ctx, borderWidth, borderWidth, size - borderWidth * 2, size - borderWidth * 2, radius - 4);
+            ctx.closePath();
+
+            // Create gradient for the border
+            const gradient = ctx.createLinearGradient(0, 0, size, size);
+            const colors = theme.gradient;
+            colors.forEach((color, i) => gradient.addColorStop(i / (colors.length - 1), color));
+            ctx.fillStyle = gradient;
+            ctx.fill();
+            ctx.restore();
+
+            // Sparkles on border (top and sides)
+            const sparkles = [
+                { x: 21, y: 21, s: 6 },
+                { x: size - 21, y: 21, s: 5 },
+                { x: 21, y: size * 0.4, s: 5 },
+                { x: size - 21, y: size * 0.4, s: 6 },
+                { x: size * 0.35, y: 21, s: 5 },
+                { x: size * 0.65, y: 21, s: 6 },
+            ];
+            ctx.fillStyle = 'rgba(255,255,255,0.85)';
+            sparkles.forEach(({ x, y, s }) => drawStar(x, y, s));
+
+            // Text bar at bottom
+            const textY = size - borderWidth / 2;
+            ctx.fillStyle = theme.textColor;
+            ctx.font = "bold 18px 'ITC Avant Garde', 'Century Gothic', 'Avant Garde', sans-serif";
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText('South Asia Awards FY26 Winner', size / 2, textY);
+
+            // Subtle inner border
+            ctx.save();
+            roundedRect(ctx, borderWidth - 0.5, borderWidth - 0.5, size - (borderWidth - 0.5) * 2, size - (borderWidth - 0.5) * 2, radius - 4);
+            ctx.strokeStyle = 'rgba(255,255,255,0.2)';
+            ctx.lineWidth = 1;
+            ctx.stroke();
+            ctx.restore();
+        }
+
+        function roundedRect(ctx, x, y, w, h, r) {
+            ctx.beginPath();
+            ctx.moveTo(x + r, y);
+            ctx.lineTo(x + w - r, y);
+            ctx.quadraticCurveTo(x + w, y, x + w, y + r);
+            ctx.lineTo(x + w, y + h - r);
+            ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+            ctx.lineTo(x + r, y + h);
+            ctx.quadraticCurveTo(x, y + h, x, y + h - r);
+            ctx.lineTo(x, y + r);
+            ctx.quadraticCurveTo(x, y, x + r, y);
+            ctx.closePath();
+        }
+
+        function roundedRectCCW(ctx, x, y, w, h, r) {
+            ctx.moveTo(x + r, y);
+            ctx.quadraticCurveTo(x, y, x, y + r);
+            ctx.lineTo(x, y + h - r);
+            ctx.quadraticCurveTo(x, y + h, x + r, y + h);
+            ctx.lineTo(x + w - r, y + h);
+            ctx.quadraticCurveTo(x + w, y + h, x + w, y + h - r);
+            ctx.lineTo(x + w, y + r);
+            ctx.quadraticCurveTo(x + w, y, x + w - r, y);
+            ctx.lineTo(x + r, y);
+        }
+
+        function drawSparkles(center, outerR, innerR) {
+            const midR = (outerR + innerR) / 2;
+            const positions = [
+                { angle: -Math.PI * 0.8, size: 6 },
+                { angle: -Math.PI * 0.5, size: 5 },
+                { angle: -Math.PI * 0.2, size: 7 },
+                { angle: 0, size: 5 },
+                { angle: Math.PI * 0.15, size: 6 },
+                { angle: Math.PI * 0.85, size: 6 },
+                { angle: -Math.PI * 0.95, size: 5 },
+            ];
+            ctx.fillStyle = 'rgba(255,255,255,0.85)';
+            positions.forEach(({ angle, size }) => {
+                drawStar(center + midR * Math.cos(angle), center + midR * Math.sin(angle), size);
+            });
+        }
+
+        function drawStar(x, y, size) {
+            ctx.beginPath();
+            ctx.moveTo(x, y - size);
+            ctx.lineTo(x + size * 0.22, y - size * 0.22);
+            ctx.lineTo(x + size, y);
+            ctx.lineTo(x + size * 0.22, y + size * 0.22);
+            ctx.lineTo(x, y + size);
+            ctx.lineTo(x - size * 0.22, y + size * 0.22);
+            ctx.lineTo(x - size, y);
+            ctx.lineTo(x - size * 0.22, y - size * 0.22);
+            ctx.closePath();
+            ctx.fill();
+        }
+
+        function drawCurvedText(center, outerR, innerR, theme) {
+            const text = "South Asia Awards FY26 Winner";
+            const midR = (outerR + innerR) / 2;
+            const fontSize = 20;
+
+            ctx.save();
+            ctx.font = `bold ${fontSize}px 'ITC Avant Garde', 'Century Gothic', 'Avant Garde', sans-serif`;
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillStyle = theme.textColor;
+
+            const charWidths = [];
+            let totalWidth = 0;
+            for (let i = 0; i < text.length; i++) {
+                const w = ctx.measureText(text[i]).width;
+                charWidths.push(w);
+                totalWidth += w;
+            }
+
+            const charSpacing = 1.2;
+            const textArcLength = totalWidth + (text.length - 1) * charSpacing;
+            const textAngle = textArcLength / midR;
+            let currentAngle = (Math.PI / 2) + textAngle / 2;
+
+            for (let i = 0; i < text.length; i++) {
+                const charWidth = charWidths[i];
+                const halfCharAngle = (charWidth / 2) / midR;
+                currentAngle -= halfCharAngle;
+
+                const x = center + midR * Math.cos(currentAngle);
+                const y = center + midR * Math.sin(currentAngle);
+
+                ctx.save();
+                ctx.translate(x, y);
+                ctx.rotate(currentAngle - Math.PI / 2);
+                ctx.fillText(text[i], 0, 0);
+                ctx.restore();
+
+                currentAngle -= halfCharAngle + charSpacing / midR;
+            }
+            ctx.restore();
+        }
+    </script>
+</body>
+</html>
